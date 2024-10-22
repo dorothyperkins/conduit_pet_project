@@ -1,0 +1,50 @@
+name: Run API Tests Sequentially
+
+# Trigger this workflow on every push or pull request to main branch
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  api-tests:
+    name: Run API Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Step 1: Checkout the code from the repository
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Node.js environment (you can specify the Node.js version you need)
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      # Step 3: Install dependencies (replace with your package manager if different)
+        name: Install dependencies
+        run: npm ci
+
+      # Step 4: Run API tests one by one
+      - name: Run API Tests
+        run: |
+          
+      
+          npx cypress run --spec cypress/e2e/1-getting-started/LoginandCreateNewPost.spec.js
+          npx cypress run --spec cypress/e2e/1-getting-started/GlobalFeedLikesCount.spec.js
+          npx cypress run --spec cypress/e2e/1-getting-started/DeletePostArticle.spec.js
+          
+      name: Run Cypress tests
+      run: npx cypress run --reporter mochawesome
+
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: Cypress-Test-Reports
+        path: cypress/reports/*.json
+
