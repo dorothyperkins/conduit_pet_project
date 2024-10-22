@@ -35,11 +35,11 @@ jobs:
           # Run your API tests sequentially using a testing framework like Mocha, Cypress, or Newman
           
           # Example for Cypress (sequential run of API tests):
-          npx cypress run --spec cypress/e2e/api_tests/test1.spec.js
-          npx cypress run --spec cypress/e2e/api_tests/test2.spec.js
-          npx cypress run --spec cypress/e2e/api_tests/test3.spec.js
+          npx cypress run --spec cypress/e2e/1-getting-started/LoginandCreateNewPost.spec.js
+          npx cypress run --spec cypress/e2e/1-getting-started/GlobalFeedLikesCount.spec.js
+          npx cypress run --spec cypress/e2e/1-getting-started/DeletePostArticle.spec.js
           
-      
+  
 
       # Optional Step: Publish test results (you can publish results or use a CI test reporter)
       - name: Publish Test Results
