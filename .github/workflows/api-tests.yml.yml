@@ -39,10 +39,7 @@ jobs:
           npx cypress run --spec cypress/e2e/api_tests/test2.spec.js
           npx cypress run --spec cypress/e2e/api_tests/test3.spec.js
           
-          # Example for Newman (Postman CLI tool):
-          newman run tests/test1.postman_collection.json
-          newman run tests/test2.postman_collection.json
-          newman run tests/test3.postman_collection.json
+      
 
       # Optional Step: Publish test results (you can publish results or use a CI test reporter)
       - name: Publish Test Results
