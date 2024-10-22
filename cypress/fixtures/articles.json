@@ -1,0 +1,20 @@
+{
+    "articles": [
+        {
+            "slug": "This-is-a-title-0.856218959531236-1457",
+            "title": "Title 1",
+            "description": "This is a description",
+            "body": "This is the body of the Article",
+            "favorited": false,
+            "favoritesCount": 1
+        },
+        {
+            "slug": "This-is-a-title-0.6871396727368559-1457",
+            "title": "Title 2",
+            "description": "This is another description",
+            "body": "This is the body of another Article",
+            "favorited": false,
+            "favoritesCount": 5
+        }
+    ]
+}
