@@ -11,14 +11,7 @@ module.exports = defineConfig({
     baseUrl: 'https://conduit.bondaracademy.com/',
     specPattern: 'cypress/e2e/**/*.{js,jsx,ts,tsx}',
     excludeSpecPattern: '**/examples/*',
-    "reporter": "mochawesome",
-    "reporterOptions": {
-      "reportDir": "cypress/reports",
-      "overwrite": false,
-      "html": false,
-      "json": true
-    }
   },
   
-})
+});
  
