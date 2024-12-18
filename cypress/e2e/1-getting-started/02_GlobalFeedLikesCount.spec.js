@@ -56,7 +56,7 @@ describe('Test with Back-end API for checking global feed likes count', () => {
         // Check the initial heart counts
         cy.get('app-article-list button').then((heartList) => {
             expect(heartList[0]).to.contain('0'); // Ensure this index is correct based on your UI
-            expect(heartList[1]).to.contain('349'); // Adjust based on your articles from the fixture
+            expect(heartList[1]).to.contain('378'); // Adjust based on your articles from the fixture
         });
 
         // Load articles fixture and adjust the favorites count

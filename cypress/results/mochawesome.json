@@ -1,0 +1,129 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 2,
+    "passes": 1,
+    "pending": 0,
+    "failures": 1,
+    "start": "2024-11-20T11:39:27.696Z",
+    "end": "2024-11-20T11:39:37.604Z",
+    "duration": 9908,
+    "testsRegistered": 2,
+    "passPercent": 50,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "3aaed80e-f67d-4564-a142-52e79595de7e",
+      "title": "",
+      "fullFile": "cypress/e2e/1-getting-started/01_LoginandCreateNewPost.spec.js",
+      "file": "cypress/e2e/1-getting-started/01_LoginandCreateNewPost.spec.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "4067892a-4723-4172-b715-66f04a9d7de1",
+          "title": "Test with Back-end API",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Verify correct request and response",
+              "fullTitle": "Test with Back-end API Verify correct request and response",
+              "timedOut": null,
+              "duration": 2467,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "cy.intercept('POST', '**/articles*').as('postArticles');\ncy.contains('New Article').click();\ncy.get('[formcontrolname=\"title\"]').type('This is the title');\ncy.get('[formcontrolname=\"description\"]').type('This is a description');\ncy.get('[formcontrolname=\"body\"]').type('This is a body of the article');\ncy.contains('Publish Article').click();\ncy.wait('@postArticles', {\n  timeout: 10000\n}).then(xhr => {\n  console.log(xhr);\n  expect(xhr.response.statusCode).to.equal(201);\n  expect(xhr.request.body.article.body).to.equal('This is a body of the article');\n  expect(xhr.response.body.article.description).to.equal('This is a description');\n});",
+              "err": {
+                "message": "AssertionError: expected 422 to equal 201",
+                "estack": "AssertionError: expected 422 to equal 201\n    at Context.eval (webpack://conduit_pet_project/./cypress/e2e/1-getting-started/01_LoginandCreateNewPost.spec.js:21:41)",
+                "diff": "- 422\n+ 201\n"
+              },
+              "uuid": "119263b9-a33c-4ac1-a99e-82c5726cfd5b",
+              "parentUUID": "4067892a-4723-4172-b715-66f04a9d7de1",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "verify popular tags are displayed",
+              "fullTitle": "Test with Back-end API verify popular tags are displayed",
+              "timedOut": null,
+              "duration": 1037,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.get('.tag-list').should('contain', 'Test').and('contain', 'GitHub').and('contain', 'Coding').and('contain', 'Git');",
+              "err": {},
+              "uuid": "d649abbf-3095-4f97-ae31-7dae7be8d567",
+              "parentUUID": "4067892a-4723-4172-b715-66f04a9d7de1",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "d649abbf-3095-4f97-ae31-7dae7be8d567"
+          ],
+          "failures": [
+            "119263b9-a33c-4ac1-a99e-82c5726cfd5b"
+          ],
+          "pending": [],
+          "skipped": [],
+          "duration": 3504,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.3"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/results",
+        "overwrite": false,
+        "html": false,
+        "json": true
+      },
+      "version": "6.2.0"
+    }
+  }
+}

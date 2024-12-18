@@ -1,0 +1,105 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2024-11-20T11:39:41.781Z",
+    "end": "2024-11-20T11:39:46.766Z",
+    "duration": 4985,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "2d0988a1-f283-4c7b-8f2d-1cb0041fe548",
+      "title": "",
+      "fullFile": "cypress/e2e/1-getting-started/03_DeletePostArticle.spec.js",
+      "file": "cypress/e2e/1-getting-started/03_DeletePostArticle.spec.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "b5cd3ca3-71c7-432a-903b-77d9f1fa912c",
+          "title": "Test with Back-end API",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Verify creating and deleting an article",
+              "fullTitle": "Test with Back-end API Verify creating and deleting an article",
+              "timedOut": null,
+              "duration": 4933,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.intercept('POST', '**/articles*').as('postArticles');\ncy.intercept('DELETE', '**/articles/*').as('deleteArticle');\ncy.intercept('GET', '**/articles?limit=10&offset=0').as('getArticles');\n// Create a new article\ncy.contains('New Article').click();\ncy.get('[formcontrolname=\"title\"]').type('This is the title articles for deleting');\ncy.get('[formcontrolname=\"description\"]').type('This is a description');\ncy.get('[formcontrolname=\"body\"]').type('This is a body of the article');\ncy.contains('Publish Article').click();\n// Verify the article is created successfully\ncy.wait('@postArticles', {\n  timeout: 10000\n}).then(xhr => {\n  expect(xhr.response.statusCode).to.equal(201);\n  expect(xhr.request.body.article.body).to.equal('This is a body of the article');\n  expect(xhr.response.body.article.description).to.equal('This is a description');\n});\n// Delete the created article\ncy.contains('Delete Article').click();\n// Verify the delete request\ncy.wait('@deleteArticle', {\n  timeout: 10000\n}).then(xhr => {\n  expect(xhr.response.statusCode).to.equal(204);\n});\n// Verify the article is no longer in the list\ncy.wait('@getArticles').then(xhr => {\n  expect(xhr.response.statusCode).to.equal(200);\n  const articles = xhr.response.body.articles;\n  const deletedArticle = articles.find(article => article.title === 'This is the title articles for deleting');\n  expect(deletedArticle).to.be.undefined;\n});",
+              "err": {},
+              "uuid": "21399534-b4a1-403f-8901-f71058927ff7",
+              "parentUUID": "b5cd3ca3-71c7-432a-903b-77d9f1fa912c",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "21399534-b4a1-403f-8901-f71058927ff7"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 4933,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.3"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/results",
+        "overwrite": false,
+        "html": false,
+        "json": true
+      },
+      "version": "6.2.0"
+    }
+  }
+}

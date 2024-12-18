@@ -1,0 +1,105 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2024-11-20T11:39:38.586Z",
+    "end": "2024-11-20T11:39:41.065Z",
+    "duration": 2479,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "278c2a05-e7b4-49b6-b854-d244a0edd2ef",
+      "title": "",
+      "fullFile": "cypress/e2e/1-getting-started/02_GlobalFeedLikesCount.spec.js",
+      "file": "cypress/e2e/1-getting-started/02_GlobalFeedLikesCount.spec.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "9bcaca71-e32c-40af-ab76-75514f4a591a",
+          "title": "Test with Back-end API for checking global feed likes count",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "verify global feed likes count",
+              "fullTitle": "Test with Back-end API for checking global feed likes count verify global feed likes count",
+              "timedOut": null,
+              "duration": 2460,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.intercept('GET', 'https://conduit-api.bondaracademy.com/api/articles/feed*', {\n  articles: [],\n  articlesCount: 0\n}).as('getFeed');\ncy.intercept('GET', 'https://conduit-api.bondaracademy.com/api/articles/*', req => {\n  req.reply({\n    article: {\n      id: 12,\n      slug: \"Discover-Bondar-Academy:-Your-Gateway-to-Efficient-Learning-1\",\n      title: \"Discover Bondar Academy: Your Gateway to Efficient Learning\",\n      description: \"Discover Bondar Academy's unique place in the educational landscape...\",\n      body: \"Bondar Academy is a leading platform for efficient education...\",\n      createdAt: \"2024-01-27T21:52:32.682Z\",\n      updatedAt: \"2024-01-27T21:52:32.682Z\",\n      authorId: 1,\n      tagList: [\"qa career\", \"Bondar Academy\", \"QA Skills\", \"Value-Focused\"],\n      author: {\n        username: \"Artem Bondar\",\n        bio: null,\n        image: \"https://storage.googleapis.com/bondar-academy-visuals/Android.png\",\n        following: false\n      },\n      favoritedBy: [{\n        id: 3,\n        email: \"cytest@test.com\",\n        username: \"CyTest\",\n        password: \"$2a$10$yKBkKY1DHqpUg3I0Ts0HKer0bDYu6vYZ7cZllkbzq9RjFFNnOdcUK\",\n        image: \"https://api.realworld.io/images/smiley-cyrus.jpeg\",\n        bio: \"Dapifer ambulo tabella celer maiores.\",\n        demo: false\n      }],\n      favorited: true,\n      favoritesCount: 348\n    }\n  });\n}).as('getArticle');\n// Visit the global feed\ncy.contains('Global Feed').click();\n// Check the initial heart counts\ncy.get('app-article-list button').then(heartList => {\n  expect(heartList[0]).to.contain('0'); // Ensure this index is correct based on your UI\n  expect(heartList[1]).to.contain('378'); // Adjust based on your articles from the fixture\n});\n// Load articles fixture and adjust the favorites count\ncy.fixture('articles').then(file => {\n  expect(file.articles).to.have.length.greaterThan(1); // Ensure there are at least two articles\n  const articleLink = file.articles[1].slug; // Get the slug of the second article\n});",
+              "err": {},
+              "uuid": "abc19d22-cb7b-46f4-a50f-40637f90f293",
+              "parentUUID": "9bcaca71-e32c-40af-ab76-75514f4a591a",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "abc19d22-cb7b-46f4-a50f-40637f90f293"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 2460,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.0.1"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.3"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/results",
+        "overwrite": false,
+        "html": false,
+        "json": true
+      },
+      "version": "6.2.0"
+    }
+  }
+}
