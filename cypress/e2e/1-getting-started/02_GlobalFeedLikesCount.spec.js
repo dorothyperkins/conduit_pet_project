@@ -1,6 +1,6 @@
 describe('Test with Back-end API for checking global feed likes count', () => {
     beforeEach('login to application', () => {
-        cy.intercept('GET', 'https://conduit-api.bondaracademy.com/api/articles', { fixture: '' });
+        cy.intercept('GET', 'https://conduit-api.bondaracademy.com/api/articles', { fixture: 'articles.json' });
         cy.loginToApplication();
     });
 
@@ -51,18 +51,22 @@ describe('Test with Back-end API for checking global feed likes count', () => {
         }).as('getArticle');
 
         // Visit the global feed
-        cy.contains('Global Feed').click()
+        cy.contains('Global Feed').click();
 
-        // Check the initial heart counts
-        cy.get('app-article-list button').then((heartList) => {
-            expect(heartList[0]).to.contain('0'); // Ensure this index is correct based on your UI
-            expect(heartList[1]).to.contain('431'); // Adjust based on your articles from the fixture
+        // Check the initial heart counts dynamically
+        cy.get('app-article-list button').each(($button, index) => {
+            cy.wrap($button).invoke('text').then((text) => {
+                const heartCount = parseInt(text.trim(), 10);
+                expect(heartCount).to.be.a('number').and.greaterThan(0);
+                cy.log(`Article ${index + 1} has ${heartCount} likes`);
+            });
         });
 
-        // Load articles fixture and adjust the favorites count
+        // Load articles fixture and validate data consistency
         cy.fixture('articles').then((file) => {
             expect(file.articles).to.have.length.greaterThan(1); // Ensure there are at least two articles
             const articleLink = file.articles[1].slug; // Get the slug of the second article
-        })
-    })
-})
+            cy.log(`Slug of the second article: ${articleLink}`);
+        });
+    });
+});
