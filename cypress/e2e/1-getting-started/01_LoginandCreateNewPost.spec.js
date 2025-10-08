@@ -1,3 +1,9 @@
+import {
+  buildArticleResponse,
+  createTimestamps,
+  defaultAuthor,
+} from '../../support/utils/article.js';
+
 const article = {
   title: 'This is the title',
   description: 'This is a description',
@@ -6,28 +12,19 @@ const article = {
   tagList: ['testing'],
 };
 
-const author = {
-  username: 'CyTester',
-  bio: null,
-  image: 'https://api.realworld.io/images/smiley-cyrus.jpeg',
-  following: false,
-};
-
 describe('Article creation flow', () => {
   beforeEach(() => {
-    cy.intercept('GET', `${Cypress.env('apiUrl')}/api/tags`, {
-      fixture: 'tags.json',
-    }).as('getTags');
-
+    cy.stubPopularTags();
     cy.loginToApplication();
     cy.wait('@getTags');
   });
 
   it('creates a new article and validates the API contract', () => {
-    const timestamps = {
-      createdAt: '2024-01-27T21:52:32.682Z',
-      updatedAt: '2024-01-27T21:52:32.682Z',
-    };
+    const timestamps = createTimestamps();
+    const articleResponse = buildArticleResponse(article, {
+      author: defaultAuthor,
+      timestamps,
+    });
 
     cy.intercept('POST', `${Cypress.env('apiUrl')}/api/articles`, (req) => {
       expect(req.body.article).to.deep.include({
@@ -38,15 +35,7 @@ describe('Article creation flow', () => {
 
       req.reply({
         statusCode: 201,
-        body: {
-          article: {
-            ...article,
-            ...timestamps,
-            author,
-            favorited: false,
-            favoritesCount: 0,
-          },
-        },
+        body: articleResponse,
       });
     }).as('postArticle');
 
@@ -55,15 +44,7 @@ describe('Article creation flow', () => {
       `${Cypress.env('apiUrl')}/api/articles/${article.slug}`,
       {
         statusCode: 200,
-        body: {
-          article: {
-            ...article,
-            ...timestamps,
-            author,
-            favorited: false,
-            favoritesCount: 0,
-          },
-        },
+        body: articleResponse,
       },
     ).as('getCreatedArticle');
 
@@ -75,7 +56,9 @@ describe('Article creation flow', () => {
     cy.contains('Publish Article').click();
 
     cy.wait('@postArticle').its('response.statusCode').should('eq', 201);
-    cy.wait('@getCreatedArticle');
+    cy.wait('@getCreatedArticle')
+      .its('response.body.article')
+      .should('deep.include', article);
 
     cy.get('h1').should('contain', article.title);
     cy.get('.article-content').should('contain', article.body);

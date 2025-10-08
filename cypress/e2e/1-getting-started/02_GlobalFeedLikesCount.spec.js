@@ -1,5 +1,7 @@
 describe('Global feed like counts', () => {
   beforeEach(() => {
+    cy.fixture('articles').as('articlesResponse');
+
     cy.intercept(
       'GET',
       `${Cypress.env('apiUrl')}/api/articles/feed*`,
@@ -12,7 +14,7 @@ describe('Global feed like counts', () => {
       },
     ).as('getFeed');
 
-    cy.fixture('articles').then((articlesFixture) => {
+    cy.get('@articlesResponse').then((articlesFixture) => {
       cy.intercept(
         'GET',
         `${Cypress.env('apiUrl')}/api/articles?limit=10&offset=0`,
@@ -21,15 +23,6 @@ describe('Global feed like counts', () => {
           body: articlesFixture,
         },
       ).as('getArticlesPage');
-
-      cy.intercept(
-        'GET',
-        `${Cypress.env('apiUrl')}/api/articles`,
-        {
-          statusCode: 200,
-          body: articlesFixture,
-        },
-      ).as('getArticles');
     });
 
     cy.loginToApplication();
@@ -39,7 +32,7 @@ describe('Global feed like counts', () => {
     cy.contains('Global Feed').click();
     cy.wait(['@getFeed', '@getArticlesPage']);
 
-    cy.fixture('articles').then(({ articles }) => {
+    cy.get('@articlesResponse').then(({ articles }) => {
       cy.get('app-article-list app-article-preview').should(
         'have.length',
         articles.length,
@@ -60,6 +53,10 @@ describe('Global feed like counts', () => {
         .find('a.preview-link')
         .should('have.attr', 'href')
         .and('include', slug);
+
+      cy.contains('app-article-preview', articles[0].title)
+        .find('a.author')
+        .should('contain', articles[0].author.username);
     });
   });
 });
