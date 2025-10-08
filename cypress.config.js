@@ -1,24 +1,55 @@
 const { defineConfig } = require("cypress");
 
-const DEFAULT_REPORTER = "mochawesome";
+const DEFAULT_REPORTER = "cypress-multi-reporters";
 const DEFAULT_REPORTER_OPTIONS = {
-  reportDir: "cypress/results",
-  overwrite: false,
-  html: false,
-  json: true,
+  reporterEnabled: "spec, mocha-junit-reporter, mochawesome",
+  mochaJunitReporterReporterOptions: {
+    mochaFile: "cypress/results/junit/results-[hash].xml",
+    toConsole: false,
+  },
+  mochawesomeReporterOptions: {
+    reportDir: "cypress/results/mochawesome",
+    overwrite: false,
+    html: false,
+    json: true,
+  },
 };
 
 const sanitizeReporter = (value) => {
   if (typeof value !== "string") {
-    return { value: DEFAULT_REPORTER, wasInvalid: true };
+    return DEFAULT_REPORTER;
   }
 
   const trimmedValue = value.trim();
   if (!trimmedValue || trimmedValue === "[object Object]") {
-    return { value: DEFAULT_REPORTER, wasInvalid: true };
+    return DEFAULT_REPORTER;
   }
 
-  return { value: trimmedValue, wasInvalid: false };
+  return trimmedValue;
+};
+
+const resolveReporterOptions = (value) => {
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    const merged = { ...DEFAULT_REPORTER_OPTIONS, ...value };
+
+    if (value.mochawesomeReporterOptions) {
+      merged.mochawesomeReporterOptions = {
+        ...DEFAULT_REPORTER_OPTIONS.mochawesomeReporterOptions,
+        ...value.mochawesomeReporterOptions,
+      };
+    }
+
+    if (value.mochaJunitReporterReporterOptions) {
+      merged.mochaJunitReporterReporterOptions = {
+        ...DEFAULT_REPORTER_OPTIONS.mochaJunitReporterReporterOptions,
+        ...value.mochaJunitReporterReporterOptions,
+      };
+    }
+
+    return merged;
+  }
+
+  return { ...DEFAULT_REPORTER_OPTIONS };
 };
 
 module.exports = defineConfig({
@@ -35,18 +66,10 @@ module.exports = defineConfig({
       const username = process.env.DB_USERNAME || "dorothyperkins420@gmail.com";
       const password = process.env.PASSWORD || "Doroti36_";
 
-      const { value: sanitizedReporter, wasInvalid } = sanitizeReporter(config.reporter);
-      const reporterChanged = sanitizedReporter !== config.reporter;
-      config.reporter = sanitizedReporter;
-
-      const hasValidReporterOptions =
-        config.reporterOptions && typeof config.reporterOptions === "object";
-      const shouldResetReporterOptions =
-        !hasValidReporterOptions || wasInvalid;
-
-      if (shouldResetReporterOptions) {
-        config.reporterOptions = { ...DEFAULT_REPORTER_OPTIONS };
-      }
+      const reporterFromEnv = process.env.CYPRESS_REPORTER;
+      const resolvedReporter = sanitizeReporter(reporterFromEnv ?? config.reporter);
+      config.reporter = resolvedReporter;
+      config.reporterOptions = resolveReporterOptions(config.reporterOptions);
 
       // Обработка ошибок, если переменные окружения отсутствуют
       if (!password) {
