@@ -1,3 +1,8 @@
+import {
+  buildArticleResponse,
+  createTimestamps,
+} from '../../support/utils/article.js';
+
 const articleForDeletion = {
   title: 'This is the title articles for deleting',
   description: 'This is a description',
@@ -8,34 +13,16 @@ const articleForDeletion = {
 
 describe('Article deletion', () => {
   beforeEach(() => {
-    cy.intercept('GET', `${Cypress.env('apiUrl')}/api/tags`, {
-      fixture: 'tags.json',
-    }).as('getTags');
-
+    cy.stubPopularTags();
     cy.loginToApplication();
     cy.wait('@getTags');
   });
 
   it('creates and deletes an article using the API', () => {
-    const timestamps = {
-      createdAt: '2024-01-27T21:52:32.682Z',
-      updatedAt: '2024-01-27T21:52:32.682Z',
-    };
-
-    const articleResponse = {
-      article: {
-        ...articleForDeletion,
-        ...timestamps,
-        author: {
-          username: 'CyTester',
-          bio: null,
-          image: 'https://api.realworld.io/images/smiley-cyrus.jpeg',
-          following: false,
-        },
-        favorited: false,
-        favoritesCount: 0,
-      },
-    };
+    const timestamps = createTimestamps();
+    const articleResponse = buildArticleResponse(articleForDeletion, {
+      timestamps,
+    });
 
     cy.intercept('POST', `${Cypress.env('apiUrl')}/api/articles`, (req) => {
       expect(req.body.article).to.deep.include({
@@ -87,13 +74,17 @@ describe('Article deletion', () => {
     cy.contains('Publish Article').click();
 
     cy.wait('@postArticle').its('response.statusCode').should('eq', 201);
-    cy.wait('@getCreatedArticle');
+    cy.wait('@getCreatedArticle')
+      .its('response.body.article')
+      .should('deep.include', articleForDeletion);
 
     cy.contains('Delete Article').click();
 
     cy.wait('@deleteArticle').its('response.statusCode').should('eq', 204);
     cy.wait('@articlesAfterDelete');
 
-    cy.get('app-article-list').should('not.contain', articleForDeletion.title);
+    cy.get('app-article-list')
+      .should('not.contain', articleForDeletion.title)
+      .and('contain', 'No articles are here... yet.');
   });
 });
