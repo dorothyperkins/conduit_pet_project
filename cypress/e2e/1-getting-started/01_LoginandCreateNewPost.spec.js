@@ -1,35 +1,92 @@
+const article = {
+  title: 'This is the title',
+  description: 'This is a description',
+  body: 'This is a body of the article',
+  slug: 'this-is-the-title',
+  tagList: ['testing'],
+};
 
-describe('Test with Back-end API', () => {
+const author = {
+  username: 'CyTester',
+  bio: null,
+  image: 'https://api.realworld.io/images/smiley-cyrus.jpeg',
+  following: false,
+};
 
-  beforeEach('login to application', () => {
-    cy.intercept('GET', 'https://conduit-api.bondaracademy.com/api/articles', { fixture: 'tags.json' })
-    cy.loginToApplication()
-  })
+describe('Article creation flow', () => {
+  beforeEach(() => {
+    cy.intercept('GET', `${Cypress.env('apiUrl')}/api/tags`, {
+      fixture: 'tags.json',
+    }).as('getTags');
 
-  it('Verify correct request and response', () => {
-    cy.intercept('POST', '**/articles*').as('postArticles')
+    cy.loginToApplication();
+    cy.wait('@getTags');
+  });
 
-    cy.contains('New Article').click()
+  it('creates a new article and validates the API contract', () => {
+    const timestamps = {
+      createdAt: '2024-01-27T21:52:32.682Z',
+      updatedAt: '2024-01-27T21:52:32.682Z',
+    };
 
-    cy.get('[formcontrolname="title"]').type('This is the title')
-    cy.get('[formcontrolname="description"]').type('This is a description')
-    cy.get('[formcontrolname="body"]').type('This is a body of the article')
-    cy.contains('Publish Article').click()
+    cy.intercept('POST', `${Cypress.env('apiUrl')}/api/articles`, (req) => {
+      expect(req.body.article).to.deep.include({
+        title: article.title,
+        description: article.description,
+        body: article.body,
+      });
 
-    cy.wait('@postArticles', { timeout: 10000 }).then((xhr) => {
-      console.log(xhr)
-      expect(xhr.response.statusCode).to.equal(201)
-      expect(xhr.request.body.article.body).to.equal('This is a body of the article')
-      expect(xhr.response.body.article.description).to.equal('This is a description')
-    })
+      req.reply({
+        statusCode: 201,
+        body: {
+          article: {
+            ...article,
+            ...timestamps,
+            author,
+            favorited: false,
+            favoritesCount: 0,
+          },
+        },
+      });
+    }).as('postArticle');
 
-  })
+    cy.intercept(
+      'GET',
+      `${Cypress.env('apiUrl')}/api/articles/${article.slug}`,
+      {
+        statusCode: 200,
+        body: {
+          article: {
+            ...article,
+            ...timestamps,
+            author,
+            favorited: false,
+            favoritesCount: 0,
+          },
+        },
+      },
+    ).as('getCreatedArticle');
 
-  it('verify popular tags are displayed', () => {
-    cy.get('.tag-list')
-      .should('contain', 'Test')
-      .and('contain', 'GitHub')
-      .and('contain', 'Coding')
-      .and('contain', 'Git')
-  })
-})
+    cy.contains('New Article').click();
+
+    cy.get('[formcontrolname="title"]').type(article.title);
+    cy.get('[formcontrolname="description"]').type(article.description);
+    cy.get('[formcontrolname="body"]').type(article.body);
+    cy.contains('Publish Article').click();
+
+    cy.wait('@postArticle').its('response.statusCode').should('eq', 201);
+    cy.wait('@getCreatedArticle');
+
+    cy.get('h1').should('contain', article.title);
+    cy.get('.article-content').should('contain', article.body);
+  });
+
+  it('displays the popular tags from the fixture', () => {
+    cy.fixture('tags').then(({ tags }) => {
+      cy.get('.tag-list').should('be.visible');
+      tags.forEach((tag) => {
+        cy.get('.tag-list').should('contain', tag);
+      });
+    });
+  });
+});
