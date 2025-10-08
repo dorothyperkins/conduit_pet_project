@@ -5,10 +5,12 @@ module.exports = defineConfig({
   viewportWidth: 1920,
   video: false,
 
-  // Настройка репортера
-  reporter: "cypress-multi-reporters",
+  reporter: "mochawesome",
   reporterOptions: {
-    configFile: "reporter-config.json",
+    reportDir: "cypress/results",
+    overwrite: false,
+    html: false,
+    json: true,
   },
 
   e2e: {
@@ -40,14 +42,5 @@ module.exports = defineConfig({
     baseUrl: "https://conduit.bondaracademy.com/",
     specPattern: "cypress/e2e/**/*.{js,jsx,ts,tsx}",
     excludeSpecPattern: "**/examples/*",
-
-    // Добавление mochawesome как дополнительного репортера
-    reporter: "mochawesome",
-    reporterOptions: {
-      reportDir: "cypress/results",
-      overwrite: false,
-      html: false,
-      json: true,
-    },
   },
 });
