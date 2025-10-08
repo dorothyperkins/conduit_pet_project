@@ -29,20 +29,34 @@ const sanitizeReporter = (value) => {
 };
 
 const resolveReporterOptions = (value) => {
-  if (value && typeof value === "object" && !Array.isArray(value)) {
-    const merged = { ...DEFAULT_REPORTER_OPTIONS, ...value };
+  let resolvedValue = value;
 
-    if (value.mochawesomeReporterOptions) {
+  if (typeof resolvedValue === "string") {
+    try {
+      resolvedValue = JSON.parse(resolvedValue);
+    } catch (error) {
+      console.warn(
+        "Unable to parse reporter options string. Falling back to default reporter options.",
+        error
+      );
+      resolvedValue = undefined;
+    }
+  }
+
+  if (resolvedValue && typeof resolvedValue === "object" && !Array.isArray(resolvedValue)) {
+    const merged = { ...DEFAULT_REPORTER_OPTIONS, ...resolvedValue };
+
+    if (resolvedValue.mochawesomeReporterOptions) {
       merged.mochawesomeReporterOptions = {
         ...DEFAULT_REPORTER_OPTIONS.mochawesomeReporterOptions,
-        ...value.mochawesomeReporterOptions,
+        ...resolvedValue.mochawesomeReporterOptions,
       };
     }
 
-    if (value.mochaJunitReporterReporterOptions) {
+    if (resolvedValue.mochaJunitReporterReporterOptions) {
       merged.mochaJunitReporterReporterOptions = {
         ...DEFAULT_REPORTER_OPTIONS.mochaJunitReporterReporterOptions,
-        ...value.mochaJunitReporterReporterOptions,
+        ...resolvedValue.mochaJunitReporterReporterOptions,
       };
     }
 

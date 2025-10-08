@@ -33,12 +33,7 @@ jobs:
       - name: Run API Tests Sequentially
         env:
           CYPRESS_MULTI_REPORTER_OPTIONS: >-
-            reporterEnabled=spec,mocha-junit-reporter,mochawesome;
-            mochawesomeReporterOptions.reportDir=cypress/results/mochawesome;
-            mochawesomeReporterOptions.overwrite=false;
-            mochawesomeReporterOptions.html=false;
-            mochawesomeReporterOptions.json=true;
-            mochaJunitReporterReporterOptions.mochaFile=cypress/results/junit/results-[hash].xml
+            {"reporterEnabled":"spec,mocha-junit-reporter,mochawesome","mochawesomeReporterOptions":{"reportDir":"cypress/results/mochawesome","overwrite":false,"html":false,"json":true},"mochaJunitReporterReporterOptions":{"mochaFile":"cypress/results/junit/results-[hash].xml"}}
         run: |
           npx cypress run --reporter cypress-multi-reporters --reporter-options "$CYPRESS_MULTI_REPORTER_OPTIONS" --spec cypress/e2e/1-getting-started/01_LoginandCreateNewPost.spec.js
           npx cypress run --reporter cypress-multi-reporters --reporter-options "$CYPRESS_MULTI_REPORTER_OPTIONS" --spec cypress/e2e/1-getting-started/02_GlobalFeedLikesCount.spec.js
